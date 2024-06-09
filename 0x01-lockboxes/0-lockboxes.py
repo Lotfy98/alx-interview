@@ -1,3 +1,8 @@
+#!/usr/bin/python3
+'''A module for working with lockboxes.
+'''
+
+
 def canUnlockAll(boxes):
     """
     Determine if all boxes can be opened.
