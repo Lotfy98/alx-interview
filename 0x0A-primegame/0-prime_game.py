@@ -1,49 +1,28 @@
 #!/usr/bin/python3
+"""Prime game module.
+"""
 
-def is_prime(n):
-    """Check if a number is prime"""
-    if n <= 1:
-        return False
-    if n == 2:
-        return True
-    if n % 2 == 0:
-        return False
-    max_divisor = int(n**0.5) + 1
-    for d in range(3, max_divisor, 2):
-        if n % d == 0:
-            return False
-    return True
 
 def isWinner(x, nums):
-    """Determine the winner of each game"""
-    maria_wins = 0
-    for n in nums:
-        # Initialize the set of consecutive integers
-        num_set = set(range(1, n + 1))
-        
-        # Initialize the current player
-        player = "Maria"
-        
-        while True:
-            # Find the smallest prime number in the set
-            prime_num = next((num for num in sorted(num_set) if is_prime(num)), None)
-            
-            # If no prime number is found, the current player loses
-            if prime_num is None:
-                if player == "Maria":
-                    maria_wins -= 1
-                break
-            
-            # Remove the prime number and its multiples from the set
-            num_set -= set(range(prime_num, n + 1, prime_num))
-            
-            # Switch the current player
-            player = "Ben" if player == "Maria" else "Maria"
-    
-    # Determine the overall winner
-    if maria_wins > x / 2:
-        return "Maria"
-    elif maria_wins < x / 2:
-        return "Ben"
-    else:
+    """Determines the winner of a prime game session with `x` rounds.
+    """
+    if x < 1 or not nums:
         return None
+    marias_wins, bens_wins = 0, 0
+    # generate primes with a limit of the maximum number in nums
+    n = max(nums)
+    primes = [True for _ in range(1, n + 1, 1)]
+    primes[0] = False
+    for i, is_prime in enumerate(primes, 1):
+        if i == 1 or not is_prime:
+            continue
+        for j in range(i + i, n + 1, i):
+            primes[j - 1] = False
+    # filter the number of primes less than n in nums for each round
+    for _, n in zip(range(x), nums):
+        primes_count = len(list(filter(lambda x: x, primes[0: n])))
+        bens_wins += primes_count % 2 == 0
+        marias_wins += primes_count % 2 == 1
+    if marias_wins == bens_wins:
+        return None
+    return 'Maria' if marias_wins > bens_wins else 'Ben'
